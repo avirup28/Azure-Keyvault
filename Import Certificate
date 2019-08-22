@@ -1,0 +1,14 @@
+$Dms = Import-Csv -Path <csv>
+foreach ($d in $Dms)
+  {
+    $Domain = $d.domain
+    $certname1 = $Domain.Replace(".","-")
+    $certname = $certname1.Replace("pfx","cert")
+    $Path = <path>+$Domain
+    $Secure_String_Pwd = ConvertTo-SecureString $d.password -AsPlainText -Force
+    $passwordname = $certname+"-password"
+    Import-AzKeyVaultCertificate -VaultName AZ-KV-CS-East-US-2 -Name $certname -FilePath $Path -Password $Secure_String_Pwd
+    Write-Host "created" $certname -ForegroundColor DarkYellow
+    Set-AzKeyVaultSecret -VaultName AZ-KV-CS-East-US-2 -Name $passwordname -SecretValue $Secure_String_Pwd
+    Write-Host "created" $passwordname -ForegroundColor DarkYellow
+} 
